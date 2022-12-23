@@ -191,7 +191,7 @@ void getTransactionDateTest(void) {
 
 
  void setMaxAmountTest(void) {
-	 printf("Tester Name: Ibrahim Elsayed\nFunction Name : isBelowMaxAmountTest\n");
+	 printf("Tester Name: Ibrahim Elsayed\nFunction Name : setMaxAmountTest\n");
 	 enum EN_terminalError_t check = TERMINAL_OK;
 	 char results[3][20] = { "TERMINAL_OK","INVALID_MAX_AMOUNT","INVALID_MAX_AMOUNT", };
 	 struct ST_terminalData_t terminal1 = { 50,50,"13/12/2022" };

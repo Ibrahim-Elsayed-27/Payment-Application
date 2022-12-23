@@ -1,8 +1,8 @@
 #pragma warning(disable : 4996)
 #include "app.h"
-#include "card.h"
-#include "terminal.h"
-#include "server.h"
+#include "../Card/card.h"
+#include "../Terminal/terminal.h"
+#include "../Server/server.h"
 #include <stdio.h>
 #include <string.h>
 void appStart(void) {

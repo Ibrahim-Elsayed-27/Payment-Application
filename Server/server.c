@@ -48,21 +48,53 @@ EN_serverError_t isAmountAvailable(ST_terminalData_t* termData, ST_accountsDB_t*
 
 EN_serverError_t saveTransaction(ST_transaction_t* transData) {
 	EN_serverError_t  check = APPROVED;
-	transData->transactionSequenceNumber += 1;
 	for (int i = 0; i < 255; i++) {
 		if (!strcmp(transactionDB[i].cardHolderData.cardHolderName, transData->cardHolderData.cardHolderName)) {
 			transactionDB[i] = *transData;
+			transData->transactionSequenceNumber += 1;
 			break;
 		}
 		else if (!strcmp(transactionDB[i].cardHolderData.cardHolderName, "")) {
 			transactionDB[i] = *transData;
 			break;
+			transData->transactionSequenceNumber += 1;
 		}
 		else {
 			check = SAVING_FAILED;
 		}
 	}
 	return check;
+}
+
+void saveTransactionTest(void) {
+	struct ST_terminalData_t terminal1 = { 100,50000,"20/12/2022" };
+	struct ST_terminalData_t terminal2 = { 100,50000,"20/12/2022" };
+	struct ST_terminalData_t terminal3 = { 100,50000,"20/12/2022" };
+	struct ST_terminalData_t terminal4 = { 100,50000,"20/12/2022" };
+	struct ST_terminalData_t terminal5 = { 100,50000,"20/12/2022" };
+	struct ST_cardData_t client1 = { "Ahmed Elsayed Mostafa","8989374615436851","01/23" };
+	struct ST_cardData_t client2 = { "Ahmed Elsayed Mostafa","8989374615436851","01/23" };
+	struct ST_cardData_t client3 = { "Ahmed Elsayed Mostafa","8989374615436851","01/23" };
+	struct ST_cardData_t client4 = { "Ahmed Elsayed Mostafa","8989374615436852","01/23" };
+	struct ST_transaction_t trans1 = { client1,terminal1,APPROVED,0 };
+	struct ST_transaction_t trans2 = { client2,terminal2,APPROVED,0 };
+	struct ST_transaction_t trans3 = { client3,terminal3,APPROVED,0 };
+	struct ST_transaction_t trans4 = { client4,terminal4,APPROVED,0 };
+	struct ST_transaction_t transactions[4] = { trans1,trans2,trans3,trans4 };
+	enum EN_transState_t check;
+	printf("Tester Name: Ibrahim Elsayed\nFunction Name : saveTransactionTest\n");
+	char results[5][10] = { "APPROVED","APPROVED","APPROVED" ,"APPROVED","APPROVED" };
+	for (int i = 0; i < 4; i++) {
+		printf("Test Case:%d\nInput Data:%s\n%s\n%f\nExpected Result:%s\nActual Result:", i, transactions[i].cardHolderData.cardHolderName, transactions[i].cardHolderData.cardExpirationDate, transactions[i].terminalData.transAmount, results[i]);
+		check = saveTransaction(&transactions[i]);
+		if (check == APPROVED) {
+			printf("APPROVED\n");
+		}
+		else {
+			printf("SAVING_FAILED\n");
+		}
+	}
+	
 }
 void listSavedTransactions(void) {
 	for (int i = 0; i < 255; i++) {
@@ -96,41 +128,6 @@ void listSavedTransactions(void) {
 			printf("################################\n\n\n");
 		}
 	}
-}
-EN_transState_t recieveTransactionData(ST_transaction_t* transData) {
-	EN_accountState_t check = APPROVED;
-	Valid_data client_data;
-	EN_serverError_t validation_check;
-	client_data = isValidAccount(&transData->cardHolderData);
-	if (client_data.check == ACCOUNT_NOT_FOUND) {
-		check = FRAUD_CARD;
-	}
-	else {
-		validation_check = isAmountAvailable(&transData->terminalData, client_data.accountRefrence);
-		if (validation_check == LOW_BALANCE) {
-			check = DECLINED_INSUFFECIENT_FUND;
-		}
-		else {
-			validation_check = isBlockedAccount(client_data.accountRefrence);
-			if (validation_check == BLOCKED_ACCOUNT) {
-				check = DECLINED_STOLEN_CARD;
-			}
-			else {
-				validation_check = saveTransaction(client_data.accountRefrence);
-				if (validation_check == APPROVED) {
-					check = APPROVED;
-					client_data.accountRefrence->balance -= transData->terminalData.transAmount;
-				}
-				else {
-					check = INTERNAL_SERVER_ERROR;
-				}
-			
-					
-				
-			}
-		}
-	}
-	return check;
 }
 
 void isValidAccountTest(void) {
@@ -205,4 +202,79 @@ void isAmountAvailableTest(void) {
 		}
 	}
 }
+EN_transState_t recieveTransactionData(ST_transaction_t* transData) {
+	EN_accountState_t check = APPROVED;
+	Valid_data client_data;
+	EN_serverError_t validation_check;
+	client_data = isValidAccount(&transData->cardHolderData);
+	if (client_data.check == ACCOUNT_NOT_FOUND) {
+		check = FRAUD_CARD;
+	}
+	else {
+		validation_check = isAmountAvailable(&transData->terminalData, client_data.accountRefrence);
+		if (validation_check == LOW_BALANCE) {
+			check = DECLINED_INSUFFECIENT_FUND;
+		}
+		else {
+			validation_check = isBlockedAccount(client_data.accountRefrence);
+			if (validation_check == BLOCKED_ACCOUNT) {
+				check = DECLINED_STOLEN_CARD;
+			}
+			else {
+				validation_check = saveTransaction(client_data.accountRefrence);
+				if (validation_check == APPROVED) {
+					check = APPROVED;
+					client_data.accountRefrence->balance -= transData->terminalData.transAmount;
+				}
+				else {
+					check = INTERNAL_SERVER_ERROR;
+				}
 
+
+
+			}
+		}
+	}
+	return check;
+}
+
+
+void recieveTransactionDataTest(void) {
+	struct ST_terminalData_t terminal1 = { 100,50000,"20/12/2022" };
+	struct ST_terminalData_t terminal2 = { 2000,50000,"20/12/2022" };
+	struct ST_terminalData_t terminal3 = { 6000,50000,"20/12/2022" };
+	struct ST_terminalData_t terminal4 = { 2000,50000,"20/12/2022" };
+	struct ST_terminalData_t terminal5 = { 2000,50000,"20/12/2022" };
+	struct ST_cardData_t client1 = { "Ahmed Elsayed Mostafa","8989374615436851","10/22" };
+	struct ST_cardData_t client2 = { "Ahmed Elsayed Mostafa","8989374615436853","01/23" };
+	struct ST_cardData_t client3 = { "Ahmed Elsayed Mostafa","8989374615436852","01/23" };
+	struct ST_cardData_t client4 = { "Ahmed Elsayed Mostafa","8989374615436855","01/23" };
+	struct ST_transaction_t trans1 = { client1,terminal1,APPROVED,0 };
+	struct ST_transaction_t trans2 = { client2,terminal2,APPROVED,0 };
+	struct ST_transaction_t trans3 = { client3,terminal3,APPROVED,0 };
+	struct ST_transaction_t trans4 = { client4,terminal4,APPROVED,0 };
+	struct ST_transaction_t transactions[4] = { trans1,trans2,trans3,trans4 };
+	enum EN_transState_t check;
+	printf("Tester Name: Ibrahim Elsayed\nFunction Name : recieveTransactionDataTest\n");
+	char results[5][30] = { "APPROVED","FRAUD_CARD","DECLINED_INSUFFECIENT_FUND" ,"DECLINED_STOLEN_CARD","INTERNAL_SERVER_ERROR" };
+	for (int i = 0; i < 4; i++) {
+		printf("Test Case:%d\nInput Data:%s\n%s\n%f\nExpected Result:%s\nActual Result:", i, transactions[i].cardHolderData.cardHolderName, transactions[i].cardHolderData.cardExpirationDate, transactions[i].terminalData.transAmount, results[i]);
+		check = recieveTransactionData(&transactions[i]);
+		if (check == APPROVED) {
+			printf("APPROVED\n");
+		}
+		else if (check == FRAUD_CARD) {
+			printf("FRAUD_CARD\n");
+		}
+		else if (check == DECLINED_INSUFFECIENT_FUND) {
+			printf("DECLINED_INSUFFECIENT_FUND\n");
+		}
+		else if (check == DECLINED_STOLEN_CARD) {
+			printf("DECLINED_STOLEN_CARD\n");
+		}
+		else if (check == INTERNAL_SERVER_ERROR) {
+			printf("INTERNAL_SERVER_ERROR\n");
+		}
+
+	}
+}

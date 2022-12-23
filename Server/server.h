@@ -1,8 +1,8 @@
 #ifndef server_h
 #define server_h
 #include <stdint.h>
-#include "card.h"
-#include "terminal.h"
+#include "../Card/card.h"
+#include "../Terminal/terminal.h"
 typedef enum EN_transState_t
 {
     APPROVED, DECLINED_INSUFFECIENT_FUND, DECLINED_STOLEN_CARD, FRAUD_CARD, INTERNAL_SERVER_ERROR
@@ -50,6 +50,8 @@ void listSavedTransactions(void);
 void isValidAccountTest(void);
 void isBlockedAccountTest(void);
 void isAmountAvailableTest(void);
+void recieveTransactionDataTest(void);
+void saveTransactionTest(void);
 
 #endif // !app_h
 

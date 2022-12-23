@@ -1,22 +1,27 @@
 #pragma warning(disable : 4996)
 #include<stdio.h>
-#include "app.h"
+#include "Application/app.h"
 #include <string.h>
-#include "card.h"
+//#include "card.h"
 int main() {
-	
+	/*
 	while (1) {
 		char trash[5];
 		appStart();
 		gets(trash);
 	}
+	*/
+	
 	//getCardExpiryDateTest();
 	//getCardHolderNameTest();
 	//getCardPANTest();
 	//getTransactionDateTest();
 	//isCardExpriedTest();
 	//isBelowMaxAmountTest();
+
 	//setMaxAmountTest();
+	//recieveTransactionDataTest();
+	saveTransactionTest();
 	/*
 	for (int i = 0; i < 5; i++) {
 		char state[10];
@@ -49,7 +54,7 @@ int main() {
 	/*
 	struct ST_cardData_t client = { "Ahmed11Ahmed11Ahmed11","5555","666666" };
 	enum EN_cardError_t check;
-	
+
 	check=getCardHolderName(&client);
 	if (check == WRONG_NAME) {
 		printf("WRONG_NAME");

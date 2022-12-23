@@ -7,10 +7,11 @@ EN_cardError_t getCardHolderName(ST_cardData_t* cardData) {
 	uint8_t size = strlen(cardData->cardHolderName);
 	if (size < 20 || size > 24) {
 		check = WRONG_NAME;
+		
 	}
 	else {
-		for (int i = 0; i < 25; i++) {
-			if (!isalpha(cardData->cardHolderName[i]) && cardData->cardHolderName[i] != NULL) {
+		for (int i = 0; i < size; i++) {
+			if (!isalpha(cardData->cardHolderName[i])) {
 				if (!isspace(cardData->cardHolderName[i])) {
 					check = WRONG_NAME;
 					break;
@@ -72,7 +73,7 @@ void getCardHolderNameTest(void) {
 	char results[4][15] = { "WRONG_NAME","CARD_OK","WRONG_NAME" ,"WRONG_NAME" };
 	enum EN_cardError_t check;
 	struct ST_cardData_t client1 = { "ahmed" };
-	struct ST_cardData_t client2 = { "ahmed mohammed mostafa" };
+	struct ST_cardData_t client2 = { "Ahmed Elsayed Mostafa" };
 	struct ST_cardData_t client3 = { "" };
 	struct ST_cardData_t client4 = { "Ahm1ed mohammed mostfa" };
 	struct ST_cardData_t clients[] = { client1,client2,client3,client4 };
@@ -98,7 +99,7 @@ void getCardExpiryDateTest(void) {
 		enum EN_cardError_t check;
 		char results[4][15] = { "CARD_OK","WRONG_EXP_DATE","WRONG_EXP_DATE" ,"WRONG_EXP_DATE" };
 		struct ST_cardData_t client1 = { "ahmed","***","01/23"};
-		struct ST_cardData_t client2 = { "ahmed mohammed mostafa","***","0/23" };
+		struct ST_cardData_t client2 = { "Ahmed Elsayed Mostafa","***","0/23" };
 		struct ST_cardData_t client3 = { "" ,"***","" };
 		struct ST_cardData_t client4 = { "Ahm1ed mohammed mostfa","***","AA/23" };
 		struct ST_cardData_t clients[] = { client1,client2,client3,client4 };
